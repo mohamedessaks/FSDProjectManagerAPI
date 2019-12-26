@@ -1,0 +1,76 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using System.Web.Http.Description;
+using ProjectManagerWebApi;
+using System.Web.Http.Cors;
+
+namespace ProjectManagerWebApi.Controllers
+{
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    public class TasksController : ApiController
+    {
+        private ProjectManagerEntities db = new ProjectManagerEntities();
+
+        // GET: api/Tasks
+        public List<Task> GetTasks()
+        {
+            var tasks = db.Tasks.ToList();
+            var response = new List<Task>();
+
+            foreach (var obj in tasks)
+            {
+                response.Add(new Task()
+                {
+                    Task_ID = obj.Task_ID,
+                    Project = obj.Project,
+                    Priority = obj.Priority,
+                    Start_Date = obj.Start_Date,
+                    End_Date = obj.End_Date,
+                    Project_ID = obj.Project_ID,
+                    Task1 = obj.Task1,
+                    
+                });
+            }
+            return response;
+        }
+
+       
+
+        // DELETE: api/Tasks/5
+        [ResponseType(typeof(Task))]
+        public IHttpActionResult DeleteTask(int id)
+        {
+            Task task = db.Tasks.Find(id);
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            db.Tasks.Remove(task);
+            db.SaveChanges();
+
+            return Ok(task);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        private bool TaskExists(int id)
+        {
+            return db.Tasks.Count(e => e.Task_ID == id) > 0;
+        }
+    }
+}
