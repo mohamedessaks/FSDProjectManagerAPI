@@ -52,7 +52,90 @@ namespace ProjectManagerWebApi.Controllers
 
             return Ok(user);
         }
-               
+
+        // PUT: api/Users/5
+        [ResponseType(typeof(void))]
+        public IHttpActionResult PutUser(int id, User user)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != user.User_ID)
+            {
+                return BadRequest();
+            }
+
+            db.Entry(user).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        // POST: api/Users
+        [ResponseType(typeof(User))]
+        public IHttpActionResult PostUser(User user)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            db.Users.Add(user);
+            db.SaveChanges();
+
+            return CreatedAtRoute("DefaultApi", new { id = user.User_ID }, user);
+        }
+
+        //[HttpGet]
+        //// DELETE: api/Users/5
+        //[ResponseType(typeof(User))]
+        //public IHttpActionResult DeleteUser(int id)
+        //{
+        //    User user = db.Users.Find(id);
+        //    if (user == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    db.Users.Remove(user);
+        //    db.SaveChanges();
+
+        //    return Ok(user);
+        //}
+
+        [HttpDelete]
+        [ResponseType(typeof(User))]
+        public IHttpActionResult DeleteUserFromDB(int id)
+        {
+
+            User user = db.Users.Find(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            db.Users.Remove(user);
+            db.SaveChanges();
+
+            return Ok(user);
+        }
 
         protected override void Dispose(bool disposing)
         {

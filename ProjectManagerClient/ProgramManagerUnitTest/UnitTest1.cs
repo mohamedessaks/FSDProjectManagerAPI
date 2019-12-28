@@ -11,6 +11,13 @@ namespace ProgramManagerUnitTest
 
     {
 
-        
+
+        [TestMethod]
+        public void GetUsers()
+        {
+            UsersController user = new UsersController();
+             List<User> users= user.GetUsers();
+            Assert.IsNotNull(users);
+        }
     }
 }

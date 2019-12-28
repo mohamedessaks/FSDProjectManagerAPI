@@ -41,7 +41,68 @@ namespace ProjectManagerWebApi.Controllers
             return response;
         }
 
-       
+        // GET: api/Tasks/5
+        [ResponseType(typeof(Task))]
+        public IHttpActionResult GetTask(int id)
+        {
+            Task task = db.Tasks.Find(id);
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(task);
+        }
+
+        // PUT: api/Tasks/5
+        [ResponseType(typeof(void))]
+        public IHttpActionResult PutTask(int id, Task task)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != task.Task_ID)
+            {
+                return BadRequest();
+            }
+
+            db.Entry(task).State = EntityState.Modified;
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!TaskExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        // POST: api/Tasks
+        [ResponseType(typeof(Task))]
+        public IHttpActionResult PostTask(Task task)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            db.Tasks.Add(task);
+            db.SaveChanges();
+
+            return CreatedAtRoute("DefaultApi", new { id = task.Task_ID }, task);
+        }
 
         // DELETE: api/Tasks/5
         [ResponseType(typeof(Task))]
